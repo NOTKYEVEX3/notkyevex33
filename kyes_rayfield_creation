@@ -12,6 +12,35 @@ local Window = Rayfield:CreateWindow({
 
 local PlayerTab = Window:CreateTab("Player", 4483362458)
 
+local GodMode = false
+
+-- YOUR EXACT GOD MODE LOGIC
+game:GetService("RunService").Heartbeat:Connect(function()
+    local char = game.Players.LocalPlayer.Character
+    if not char or not char:FindFirstChild("Humanoid") then return end
+
+    if GodMode then
+        if char:FindFirstChild("Animate") then char.Animate.Disabled = true end
+        local moveDir = char.Humanoid.MoveDirection
+        if moveDir.Magnitude > 0 then
+            char.Humanoid:MoveTo(char.HumanoidRootPart.Position + (moveDir * 5))
+        end
+    else
+        if char:FindFirstChild("Animate") then 
+            char.Animate.Disabled = false 
+        end
+    end
+end)
+
+PlayerTab:CreateToggle({
+   Name = "God Mode",
+   CurrentValue = false,
+   Flag = "GodMode",
+   Callback = function(Value)
+      GodMode = Value
+   end,
+})
+
 PlayerTab:CreateSlider({
    Name = "WalkSpeed",
    Range = {10, 100},
@@ -20,85 +49,8 @@ PlayerTab:CreateSlider({
    CurrentValue = 16,
    Flag = "Slider1", 
    Callback = function(Value)
-      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+      if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+      end
    end,
-})
-
-local GodModeActive = false
-PlayerTab:CreateToggle({
-   Name = "God Mode",
-   CurrentValue = false,
-   Flag = "GodMode",
-   Callback = function(Value)
-      GodModeActive = Value
-      task.spawn(function()
-         while GodModeActive do
-            local char = game.Players.LocalPlayer.Character
-            local hum = char and char:FindFirstChild("Humanoid")
-            if hum then
-               hum:MoveTo(char.PrimaryPart.Position + Vector3.new(0.01, 0, 0.01))
-            end
-            task.wait(0.1)
-         end
-      end)
-   end,
-})
-
-local ExplodeAura = false
-PlayerTab:CreateToggle({
-   Name = "Explode Aura (Crystal)",
-   CurrentValue = false,
-   Flag = "ExAura",
-   Callback = function(Value)
-      ExplodeAura = Value
-      task.spawn(function()
-         while ExplodeAura do
-            local char = game.Players.LocalPlayer.Character
-            local tool = char:FindFirstChild("Crystal") or game.Players.LocalPlayer.Backpack:FindFirstChild("Crystal")
-            if tool then
-               tool.Parent = char
-               tool:Activate()
-               task.wait(0.05)
-               tool.Parent = workspace
-               firetouchinterest(char.PrimaryPart, tool.Handle, 0)
-               firetouchinterest(char.PrimaryPart, tool.Handle, 1)
-            end
-            task.wait(0.1)
-         end
-      end)
-   end,
-})
-
-Rayfield:LoadCustomTheme({
-    TextColor = Color3.fromRGB(240, 240, 240),
-    Background = Color3.fromRGB(25, 25, 25),
-    Topbar = Color3.fromRGB(34, 34, 34),
-    Shadow = Color3.fromRGB(20, 20, 20),
-    NotificationBackground = Color3.fromRGB(20, 20, 20),
-    NotificationActionsBackground = Color3.fromRGB(230, 230, 230),
-    TabBackground = Color3.fromRGB(80, 80, 80),
-    TabStroke = Color3.fromRGB(85, 85, 85),
-    TabBackgroundSelected = Color3.fromRGB(210, 210, 210),
-    TabTextColor = Color3.fromRGB(240, 240, 240),
-    SelectedTabTextColor = Color3.fromRGB(50, 50, 50),
-    ElementBackground = Color3.fromRGB(35, 35, 35),
-    ElementBackgroundHover = Color3.fromRGB(40, 40, 40),
-    SecondaryElementBackground = Color3.fromRGB(25, 25, 25),
-    ElementStroke = Color3.fromRGB(50, 50, 50),
-    SecondaryElementStroke = Color3.fromRGB(40, 40, 40),
-    SliderBackground = Color3.fromRGB(50, 138, 220),
-    SliderProgress = Color3.fromRGB(50, 138, 220),
-    SliderStroke = Color3.fromRGB(58, 163, 255),
-    ToggleBackground = Color3.fromRGB(30, 30, 30),
-    ToggleEnabled = Color3.fromRGB(0, 146, 214),
-    ToggleDisabled = Color3.fromRGB(100, 100, 100),
-    ToggleEnabledStroke = Color3.fromRGB(0, 170, 255),
-    ToggleDisabledStroke = Color3.fromRGB(125, 125, 125),
-    ToggleEnabledOuterStroke = Color3.fromRGB(100, 100, 100),
-    ToggleDisabledOuterStroke = Color3.fromRGB(65, 65, 65),
-    DropdownSelected = Color3.fromRGB(40, 40, 40),
-    DropdownUnselected = Color3.fromRGB(30, 30, 30),
-    InputBackground = Color3.fromRGB(30, 30, 30),
-    InputStroke = Color3.fromRGB(65, 65, 65),
-    PlaceholderColor = Color3.fromRGB(178, 178, 178)
 })
